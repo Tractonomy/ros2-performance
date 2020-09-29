@@ -155,22 +155,20 @@ private:
 
     void _print_header()
     {
-        const char separator = ' ';
-        const int wide_space = 15;
-        const int narrow_space = 10;
+        const char separator = ';';
 
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << "time[ms]";
-        _file << std::left << std::setw(narrow_space) << std::setfill(separator) << "cpu[%]";
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << "arena[KB]";
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << "in_use[KB]";
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << "mmap[KB]";
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << "rss[KB]";
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << "vsz[KB]";
+        _file << "time[ms]";
+        _file << separator << "cpu[%]";
+        _file << separator << "arena[KB]";
+        _file << separator << "in_use[KB]";
+        _file << separator << "mmap[KB]";
+        _file << separator << "rss[KB]";
+        _file << separator << "vsz[KB]";
 
         if (_got_system_info){
-            _file << std::left << std::setw(wide_space) << std::setfill(separator) << "pubs";
-            _file << std::left << std::setw(wide_space) << std::setfill(separator) << "subs";
-            _file << std::left << std::setw(wide_space) << std::setfill(separator) << "frequency";
+            _file << separator << "pubs";
+            _file << separator << "subs";
+            _file << separator << "frequency";
         }
 
         _file << std::endl;
@@ -183,22 +181,20 @@ private:
     // Print data to file
     void _print()
     {
-        const char separator = ' ';
-        const int wide_space = 15;
-        const int narrow_space = 10;
+        const char separator = ';';
 
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << std::setprecision(wide_space-1) << std::round(_resources.elasped_ms);
-        _file << std::left << std::setw(narrow_space) << std::setfill(separator) << std::setprecision(2) << _resources.cpu_usage;
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << _resources.mem_arena_KB;
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << _resources.mem_in_use_KB;
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << _resources.mem_mmap_KB;
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << _resources.mem_max_rss_KB;
-        _file << std::left << std::setw(wide_space) << std::setfill(separator) << _resources.mem_virtual_KB;
+        _file << std::setprecision(14) << std::round(_resources.elasped_ms);
+        _file << separator << std::setprecision(2) << _resources.cpu_usage;
+        _file << separator << _resources.mem_arena_KB;
+        _file << separator << _resources.mem_in_use_KB;
+        _file << separator << _resources.mem_mmap_KB;
+        _file << separator << _resources.mem_max_rss_KB;
+        _file << separator << _resources.mem_virtual_KB;
 
         if (_got_system_info){
-            _file << std::left << std::setw(wide_space) << std::setfill(separator) << _pubs;
-            _file << std::left << std::setw(wide_space) << std::setfill(separator) << _subs;
-            _file << std::left << std::setw(wide_space) << std::setfill(separator)<<  std::fixed << _frequency << std::defaultfloat;
+            _file << separator << _pubs;
+            _file << separator << _subs;
+            _file << separator<<  std::fixed << _frequency << std::defaultfloat;
         }
 
         _file << std::endl;

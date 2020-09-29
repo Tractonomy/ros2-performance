@@ -57,10 +57,10 @@ public:
 
         std::cout << "[EventsLogger]: Logging to " << _filename << std::endl;
 
-        _file << std::left << std::setw(_p_time_width) << std::setfill(_p_separator) << "Time[ms]";
-        _file << std::left << std::setw(_p_caller_name_width) << std::setfill(_p_separator) << "Caller";
-        _file << std::left << std::setw(_p_code_width) << std::setfill(_p_separator) << "Code";
-        _file << std::left << std::setw(_p_desc_width) << std::setfill(_p_separator) << "Description" << std::endl;
+        _file << "Time[ms]";
+        _file << _p_separator << "Caller";
+        _file << _p_separator << "Code";
+        _file << _p_separator << "Description" << std::endl;
     };
 
 
@@ -84,10 +84,10 @@ public:
         // the event logger can be used from multiple threads, so we add a mutex
         std::lock_guard<std::mutex> lock(_writerMutex);
 
-        _file << std::left << std::setw(_p_time_width) << std::setfill(_p_separator) << event_timestamp_ms;
-        _file << std::left << std::setw(_p_caller_name_width) << std::setfill(_p_separator) << event.caller_name;
-        _file << std::left << std::setw(_p_code_width) << std::setfill(_p_separator) << event.code;
-        _file << std::left << std::setw(_p_desc_width) << std::setfill(_p_separator) << event.description << std::endl;
+        _file << event_timestamp_ms;
+        _file << _p_separator << event.caller_name;
+        _file << _p_separator << event.code;
+        _file << _p_separator << event.description << std::endl;
 
     }
 
@@ -98,10 +98,6 @@ private:
     std::mutex _writerMutex;
 
     // For print formatting
-    static const char _p_separator = ' ';
-    static const int _p_time_width = 12;
-    static const int _p_caller_name_width = 25;
-    static const int _p_code_width = 6;
-    static const int _p_desc_width = 20;
+    static const char _p_separator = ';';
 };
 }

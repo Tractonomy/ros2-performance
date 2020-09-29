@@ -303,40 +303,39 @@ void log_total_stats(unsigned long int total_received,
                      double average_latency,
                      std::ostream& stream)
 {
-    const char separator = ' ';
-    const int wide_space = 15;
-    const int narrow_space = 10;
+    const char separator = ';';
 
     double total_lost_percentage = (double)total_lost / (total_received + total_lost) * 100;
     double total_late_percentage = (double)total_late / total_received * 100;
     double total_too_late_percentage = (double)total_too_late / total_received * 100;
 
     // log header
-    stream << std::left << std::setw(wide_space)   << std::setfill(separator) << "received[#]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "mean[us]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "late[#]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "late[%]";
-    stream << std::left << std::setw(wide_space)   << std::setfill(separator) << "too_late[#]";
-    stream << std::left << std::setw(wide_space)   << std::setfill(separator) << "too_late[%]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "lost[#]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "lost[%]" << std::endl;
+    stream << "received[#]";
+    stream << separator << "mean[us]";
+    stream << separator << "late[#]";
+    stream << separator << "late[%]";
+    stream << separator << "too_late[#]";
+    stream << separator << "too_late[%]";
+    stream << separator << "lost[#]";
+    stream << separator << "lost[%]" << std::endl;
 
     // log total values
-    stream << std::left << std::setw(wide_space)   << std::setfill(separator) << total_received;
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << average_latency;
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << total_late;
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << std::setprecision(4) << total_late_percentage;
-    stream << std::left << std::setw(wide_space)   << std::setfill(separator) << total_too_late;
-    stream << std::left << std::setw(wide_space)   << std::setfill(separator) << std::setprecision(4) << total_too_late_percentage;
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << total_lost;
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << std::setprecision(4) << total_lost_percentage << std::endl;
+    stream << total_received;
+    stream << separator << average_latency;
+    stream << separator << total_late;
+    stream << separator << std::setprecision(4) << total_late_percentage;
+    stream << separator << total_too_late;
+    stream << separator << std::setprecision(4) << total_too_late_percentage;
+    stream << separator << total_lost;
+    stream << separator << std::setprecision(4) << total_lost_percentage << std::endl;
 }
 
 unsigned long int parse_line(std::string& line)
 {
-    std::string split_left = line.substr(0, line.find_first_of(" "));
-    std::string split_right = line.substr(line.find_first_of(" "), line.length());
-    line = split_right.substr(split_right.find_first_not_of(" "), split_right.length());
+    std::string seperator = ";";
+    std::string split_left = line.substr(0, line.find_first_of(seperator));
+    std::string split_right = line.substr(line.find_first_of(seperator), line.length());
+    line = split_right.substr(split_right.find_first_not_of(seperator), split_right.length());
     return strtoul(split_left.c_str(), NULL, 0);
 }
 
@@ -352,7 +351,7 @@ void performance_test::System::print_agregate_stats(std::vector<std::string> top
     for(const auto& json : topology_json_list)
     {
         std::string basename = json.substr(json.find_last_of("/") + 1, json.length());
-        std::string filename = basename.substr(0,basename.length()-5) + "_log/latency_total.txt";
+        std::string filename = basename.substr(0,basename.length()-5) + "_log/latency_total.csv";
         std::string line;
         std::ifstream log_file(filename);
 
@@ -385,24 +384,22 @@ void performance_test::System::print_agregate_stats(std::vector<std::string> top
 
 void performance_test::System::log_latency_all_stats(std::ostream& stream) const
 {
-    const char separator = ' ';
-    const int wide_space = 15;
-    const int narrow_space = 10;
+    const char separator = ';';
 
     // log header
-    stream << std::left << std::setw(wide_space) << std::setfill(separator) << "node";
-    stream << std::left << std::setw(wide_space) << std::setfill(separator) << "topic";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "size[b]";
-    stream << std::left << std::setw(wide_space) << std::setfill(separator) << "received[#]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "late[#]";
-    stream << std::left << std::setw(wide_space) << std::setfill(separator) << "too_late[#]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "lost[#]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "mean[us]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "sd[us]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "min[us]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "max[us]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "freq[hz]";
-    stream << std::left << std::setw(narrow_space) << std::setfill(separator) << "duration[s]";
+    stream << "node";
+    stream << separator << "topic";
+    stream << separator << "size[b]";
+    stream << separator << "received[#]";
+    stream << separator << "late[#]";
+    stream << separator << "too_late[#]";
+    stream << separator << "lost[#]";
+    stream << separator << "mean[us]";
+    stream << separator << "sd[us]";
+    stream << separator << "min[us]";
+    stream << separator << "max[us]";
+    stream << separator << "freq[hz]";
+    stream << separator << "duration[s]";
 
     stream << std::endl;
 
@@ -422,19 +419,19 @@ void performance_test::System::log_latency_all_stats(std::ostream& stream) const
             total_late += tracker.second.late();
             total_too_late += tracker.second.too_late();
 
-            stream << std::left << std::setw(wide_space) << std::setfill(separator) << n->get_name();
-            stream << std::left << std::setw(wide_space) << std::setfill(separator) << tracker.first;
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << tracker.second.size();
-            stream << std::left << std::setw(wide_space) << std::setfill(separator) << tracker.second.received();
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << tracker.second.late();
-            stream << std::left << std::setw(wide_space) << std::setfill(separator) << tracker.second.too_late();
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << tracker.second.lost();
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << std::round(tracker.second.stat().mean());
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << std::round(tracker.second.stat().stddev());
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << std::round(tracker.second.stat().min());
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << std::round(tracker.second.stat().max());
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << tracker.second.frequency();
-            stream << std::left << std::setw(narrow_space) << std::setfill(separator) << _experiment_duration_sec;
+            stream << n->get_name();
+            stream << separator << tracker.first;
+            stream << separator << tracker.second.size();
+            stream << separator << tracker.second.received();
+            stream << separator << tracker.second.late();
+            stream << separator << tracker.second.too_late();
+            stream << separator << tracker.second.lost();
+            stream << separator << std::round(tracker.second.stat().mean());
+            stream << separator << std::round(tracker.second.stat().stddev());
+            stream << separator << std::round(tracker.second.stat().min());
+            stream << separator << std::round(tracker.second.stat().max());
+            stream << separator << tracker.second.frequency();
+            stream << separator << _experiment_duration_sec;
             stream << std::endl;
         }
     }

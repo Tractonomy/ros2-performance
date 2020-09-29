@@ -78,10 +78,10 @@ int main(int argc, char** argv)
     std::string make_dir = "mkdir -p " + dir_name;
     const auto ret = system(make_dir.c_str());
     static_cast<void>(ret);
-    std::string resources_output_path     = dir_name + "/resources.txt";
-    std::string events_output_path        = dir_name + "/events.txt";
-    std::string latency_all_output_path   = dir_name + "/latency_all.txt";
-    std::string latency_total_output_path = dir_name + "/latency_total.txt";
+    std::string resources_output_path     = dir_name + "/resources.csv";
+    std::string events_output_path        = dir_name + "/events.csv";
+    std::string latency_all_output_path   = dir_name + "/latency_all.csv";
+    std::string latency_total_output_path = dir_name + "/latency_total.csv";
 
     // Start resources logger
     performance_test::ResourceUsageLogger ru_logger(resources_output_path);
