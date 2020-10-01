@@ -353,7 +353,6 @@ private:
     // Get client and tracking count from map
     auto& client_tuple = _clients.at(name);
     auto client = std::static_pointer_cast<rclcpp::Client<Srv>>(std::get<0>(client_tuple));
-    auto& tracker = std::get<1>(client_tuple);
     auto& tracking_number = std::get<2>(client_tuple);
 
     //Wait for service to come online
@@ -420,14 +419,15 @@ private:
   template <typename Srv>
   void _response_received_callback(const std::string& name, std::shared_ptr<typename Srv::Request> request, typename rclcpp::Client<Srv>::SharedFuture result_future)
   {
-      // This is not used at the moment
+      (void)request;
+
       auto response = result_future.get();
 
       // Scan new message's header
       auto& tracker = std::get<1>(_clients.at(name));
-      tracker.scan(request->header, this->now(), _events_logger);
+      tracker.scan(response->header, this->now(), _events_logger);
 
-      RCLCPP_DEBUG(this->get_logger(), "Response on %s request number %d received after %lu us", name.c_str(), request->header.tracking_number, tracker.last());
+      RCLCPP_DEBUG(this->get_logger(), "Response on %s request number %d received after %lu us", name.c_str(), response->header.tracking_number, tracker.last());
   }
 
   // Client blocking call does not work with timers
@@ -450,11 +450,13 @@ private:
     auto& tracker = _servers.at(name).second;
 
     resize_msg(response->data, response->header, size);
+    response->header.node_id = item_name_to_id(this->get_fully_qualified_name());
     response->header.frequency = request->header.frequency;
-    response->header.tracking_number = tracker.stat().n();
-    response->header.stamp = this->now();
+    response->header.tracking_number = request->header.tracking_number;
+    // Use the same timestamp to know how long the entire service request has taken (better accuracy for multi device)
+    response->header.stamp = request->header.stamp;
 
-    tracker.scan(request->header, response->header.stamp, _events_logger);
+    tracker.scan(request->header, this->now(), _events_logger);
     RCLCPP_DEBUG(this->get_logger(), "Request on %s request number %d received %lu us", name.c_str(), request->header.tracking_number, tracker.last());
   }
 
