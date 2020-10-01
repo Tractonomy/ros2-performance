@@ -140,7 +140,9 @@ public:
 
 
   template <typename Srv>
-  void add_server(const Service<Srv>& service, rmw_qos_profile_t qos_profile = rmw_qos_profile_default)
+  void add_server(const Service<Srv>& service,
+                    rmw_qos_profile_t qos_profile = rmw_qos_profile_default,
+                    size_t size = 0)
   {
 
     std::function<void(
@@ -150,6 +152,7 @@ public:
           &Node::_service_callback<Srv>,
           this,
           service.name,
+          size,
           std::placeholders::_1,
           std::placeholders::_2,
           std::placeholders::_3
@@ -342,9 +345,6 @@ private:
   template <typename Srv>
   void _request(const std::string& name, size_t size, std::chrono::microseconds period)
   {
-
-    (void)size;
-
     if (_client_lock){
       return;
     }
@@ -376,6 +376,7 @@ private:
 
     // Create request
     auto request = std::make_shared<typename Srv::Request>();
+    resize_msg(request->data, request->header, size);
     // get the frequency value that we stored when creating the publisher
     request->header.node_id = item_name_to_id(this->get_fully_qualified_name());
     request->header.frequency = 1000000.0 / period.count();
@@ -437,6 +438,7 @@ private:
   template <typename Srv>
   void _service_callback(
     const std::string& name,
+    size_t size,
     const std::shared_ptr<rmw_request_id_t> request_header,
     const std::shared_ptr<typename Srv::Request> request,
     const std::shared_ptr<typename Srv::Response> response)
@@ -447,6 +449,7 @@ private:
     // we use the tracker to store some information also on the server side
     auto& tracker = _servers.at(name).second;
 
+    resize_msg(response->data, response->header, size);
     response->header.frequency = request->header.frequency;
     response->header.tracking_number = tracker.stat().n();
     response->header.stamp = this->now();
