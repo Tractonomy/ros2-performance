@@ -65,7 +65,7 @@ def parse_target_json(target_file, experiment_type = ""):
     return merged_target
 
 
-def parse_csv_dict(file_path, delimiter='\t'):
+def parse_csv_dict(file_path, delimiter=';'):
     '''parse a file converting it into a csv dictionary'''
 
     with open(file_path, 'r') as file:

@@ -18,6 +18,8 @@ import numpy as np
 import sys
 
 import data_utils
+from data_utils import *
+
 
 def organize_data(data_samples, x_key, separator, uncountable_data):
     '''

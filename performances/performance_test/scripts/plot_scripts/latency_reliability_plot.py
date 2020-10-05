@@ -74,16 +74,17 @@ def parse_csv(file_path):
         msg_count = int(row_dict.get('received[#]', 0))
         spin_frequency = int(row_dict.get('spin_frequency', -1))
         avg_latency = float(row_dict.get('mean[us]', 0))
-        send_frequency = int(row_dict.get('freq[hz]', 0))
-        msg_size = int(row_dict.get('size[b]', 0))
+        send_frequency = float(row_dict.get('freq[hz]', 0))
+        msg_size = float(row_dict.get('size[b]', 0))
         experiment_duration = int(row_dict.get('duration[s]', 0))
 
         data['msg_size'] = msg_size
         data['duration'] = experiment_duration
-        pubs_ids.add(topic)
-
+        
         if node_name == topic:
             # this row denotes a publisher or server
+            pubs_ids.add(topic)
+
             data['sent_count'] += msg_count
             data['send_frequency'] = send_frequency
             data['th_count'] = send_frequency * experiment_duration
@@ -141,14 +142,16 @@ def main(argv):
     parsed_list = []
     # Collect data from csv files
     for file_path in list_dir:
-
-        parsed_csv = parse_csv(file_path)
+        parsed_csv = {}
+        try:
+            parsed_csv = parse_csv(file_path)
+        except Exception:
+            pass
 
         if not parsed_csv:
             continue
 
         parsed_list.append(parsed_csv)
-
 
     data = plot_common.organize_data(parsed_list, x_axis, separator, __UNCOUNTABLE_DATA__)
 
