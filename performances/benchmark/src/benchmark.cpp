@@ -132,4 +132,6 @@ int main(int argc, char** argv)
         std::cout << "System total:" << std::endl;
         ros2_system.print_agregate_stats(json_list);
     }
+    std::cout << "benchmark end" << std::endl;
+    return 0;
 }
