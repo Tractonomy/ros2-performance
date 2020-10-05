@@ -91,9 +91,11 @@ void performance_test::System::spin(int duration_sec, bool wait_for_discovery, b
     }
 
     // let the nodes spin for the specified amount of time
+    RCLCPP_INFO(rclcpp::get_logger("system"), "Sleeping main thread for %ds", _experiment_duration_sec);
     std::this_thread::sleep_for(std::chrono::seconds(_experiment_duration_sec));
 
     // after the timer, stop all the spin functions
+    RCLCPP_INFO(rclcpp::get_logger("system"), "Canceling all executors");
     for (const auto& pair : _executors_map) {
         auto& executor = pair.second.executor;
         executor->cancel();
@@ -160,7 +162,17 @@ void performance_test::System::wait_pdp_discovery(
         auto duration =
             std::chrono::duration_cast<std::chrono::milliseconds>(t - pdp_start_time - max_pdp_time).count();
         if (duration > 0){
-            assert(0 && "[discovery] PDP took more than maximum discovery time");
+            auto message = "[discovery] PDP took more than maximum discovery time";
+            assert(0 && message);
+            if (_events_logger != nullptr){
+                // Create an event for PDP failure
+                EventsLogger::Event pdp_ev;
+                pdp_ev.caller_name = "SYSTEM";
+                pdp_ev.code = EventsLogger::EventCode::discovery;
+                pdp_ev.description = message;
+                _events_logger->write_event(pdp_ev);
+                return;
+            }
         }
 
         rate.sleep();
@@ -226,7 +238,17 @@ void performance_test::System::wait_edp_discovery(
         auto duration =
             std::chrono::duration_cast<std::chrono::milliseconds>(t - edp_start_time - max_edp_time).count();
         if (duration > 0){
-            assert(0 && "[discovery] EDP took more than maximum discovery time");
+            auto message = "[discovery] EDP took more than maximum discovery time";
+            assert(0 && message);
+            if (_events_logger != nullptr){
+                // Create an event for EDP completed
+                EventsLogger::Event edp_ev;
+                edp_ev.caller_name = "SYSTEM";
+                edp_ev.code = EventsLogger::EventCode::discovery;
+                edp_ev.description = message;
+                _events_logger->write_event(edp_ev);
+            }
+            return;
         }
 
         rate.sleep();
