@@ -92,7 +92,7 @@ void performance_test::System::spin(int duration_sec, bool wait_for_discovery, b
 
     // let the nodes spin for the specified amount of time
     RCLCPP_INFO(rclcpp::get_logger("system"), "Sleeping main thread for %ds", _experiment_duration_sec);
-    std::this_thread::sleep_for(std::chrono::seconds(_experiment_duration_sec));
+    rclcpp::sleep_for(std::chrono::seconds(_experiment_duration_sec));
 
     // after the timer, stop all the spin functions
     RCLCPP_INFO(rclcpp::get_logger("system"), "Canceling all executors");
