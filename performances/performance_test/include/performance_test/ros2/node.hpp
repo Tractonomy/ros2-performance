@@ -345,22 +345,18 @@ private:
   template <typename Srv>
   void _request(const std::string& name, size_t size, std::chrono::microseconds period)
   {
-    if (_client_lock){
-      return;
-    }
-    _client_lock = true;
-
     // Get client and tracking count from map
     auto& client_tuple = _clients.at(name);
     auto client = std::static_pointer_cast<rclcpp::Client<Srv>>(std::get<0>(client_tuple));
     auto& tracking_number = std::get<2>(client_tuple);
 
-    //Wait for service to come online
-    if (!client->wait_for_service(1.0s)){
+    // Wait for service to come online
+    auto wait_period = 5.0s;
+    if (!client->wait_for_service(wait_period)){
       if (_events_logger != nullptr){
           // Create a descrption for the event
           std::stringstream description;
-          description << "[service] '"<< name.c_str() << "' unavailable after 1s";
+          description << "[service] '" << name.c_str() << "' unavailable after " << wait_period.count() << "s";
 
           EventsLogger::Event ev;
           ev.caller_name = name + "->" + this->get_name();
@@ -369,7 +365,6 @@ private:
 
           _events_logger->write_event(ev);
       }
-      _client_lock = false;
       return;
     }
 
@@ -395,23 +390,6 @@ private:
 
     auto result_future = client->async_send_request(request, callback_function);
     tracking_number++;
-    _client_lock = false;
-
-    // Client blocking call does not work with timers
-    /*
-
-    // send the request and wait for the response
-    typename rclcpp::Client<Srv>::SharedFuture result_future = client->async_send_request(request);
-    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result_future) !=
-        rclcpp::executor::FutureReturnCode::SUCCESS)
-    {
-      // TODO: handle if request fails
-      return;
-
-    }
-    tracker.scan(request->header, this->now(), _events_logger);
-    */
-
     RCLCPP_DEBUG(this->get_logger(), "Requesting to %s request number %d", name.c_str(), request->header.tracking_number);
   }
 
