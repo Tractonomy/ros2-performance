@@ -100,6 +100,7 @@ void performance_test::System::spin(int duration_sec, bool wait_for_discovery, b
         auto& executor = pair.second.executor;
         executor->cancel();
     }
+    rclcpp::sleep_for(std::chrono::milliseconds(500));
 }
 
 
