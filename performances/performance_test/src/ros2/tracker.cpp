@@ -56,7 +56,7 @@ void performance_test::Tracker::scan(
                 if(n_lost == 1) {
                     description << "msg " << header.tracking_number - 1 << " lost.";
                 } else {
-                    description << "msgs " << header.tracking_number - 1 << " to " << header.tracking_number - 1 + n_lost << " lost.";
+                    description << "msgs " << header.tracking_number - 1 - n_lost << " to " << header.tracking_number - 1 << " lost.";
                 }
                 ev.description = description.str();
                 elog->write_event(ev);
@@ -110,11 +110,6 @@ void performance_test::Tracker::scan(
         }
     }
 
-    if(!too_late) {
-        // Compute statistics with new sample. Don't add to this the msgs
-        // that arrived too late.
-        _stat.add_sample(lat_us);
-    }
-
+    _stat.add_sample(lat_us);
     _received_messages++;
 }
