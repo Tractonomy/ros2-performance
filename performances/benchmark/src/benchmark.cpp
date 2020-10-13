@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     // terminate the experiment
     ru_logger.stop();
     rclcpp::shutdown();
-    std::this_thread::sleep_for(500ms);
+    rclcpp::sleep_for(std::chrono::milliseconds(500));
 
     ros2_system.print_latency_all_stats();
 
