@@ -351,7 +351,7 @@ private:
     auto& tracking_number = std::get<2>(client_tuple);
 
     // Wait for service to come online
-    auto wait_period = 5.0s;
+    auto wait_period = 0.5s;
     if (!client->wait_for_service(wait_period)){
       if (_events_logger != nullptr){
           // Create a descrption for the event
