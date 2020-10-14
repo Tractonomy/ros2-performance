@@ -43,7 +43,7 @@ void performance_test::System::add_node(std::shared_ptr<Node> node)
         ex.name = ex.name + "_" + node->get_name();
     } else {
         auto ex = NamedExecutor();
-        ex.executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
+        ex.executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
         ex.executor->add_node(node);
         ex.name = node->get_name();
 
@@ -100,7 +100,6 @@ void performance_test::System::spin(int duration_sec, bool wait_for_discovery, b
         auto& executor = pair.second.executor;
         executor->cancel();
     }
-    rclcpp::sleep_for(std::chrono::milliseconds(500));
 }
 
 
