@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <climits>
 
 #include "rclcpp/time.hpp"
 
@@ -31,9 +32,9 @@ public:
 
       bool is_enabled = true;
       int late_percentage = 20;
-      int late_absolute_us = 5000;
+      int late_absolute_us = INT_MAX;
       int too_late_percentage = 100;
-      int too_late_absolute_us = 50000;
+      int too_late_absolute_us = INT_MAX;
   };
 
   typedef uint32_t TrackingNumber;

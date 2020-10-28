@@ -110,6 +110,11 @@ void performance_test::Tracker::scan(
         }
     }
 
-    _stat.add_sample(lat_us);
+    if(!too_late) {
+        // Compute statistics with new sample. Don't add to this the msgs
+        // that arrived too late.
+        _stat.add_sample(lat_us);
+    }
+    
     _received_messages++;
 }
